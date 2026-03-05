@@ -1,0 +1,12 @@
+﻿# Python cache
+__pycache__/
+*.pyc
+
+# Test cache
+.pytest_cache/
+
+# Local virtual environment
+.venv/
+
+# Runtime logs
+logs/*.jsonl
