@@ -11,7 +11,17 @@
 - Windows PowerShell / CMD（当前仓库提供 `.bat` 启动脚本）
 - OpenAI API Key（没有也能跑，AI 会自动 fallback 到规则引擎）
 
-## 2. 安装依赖
+## 2. 初始化（一次）
+
+推荐直接运行：
+
+```bat
+init_maque.bat
+```
+
+它会自动创建 `.venv` 并安装依赖。
+
+手动方式：
 
 ```bash
 python -m venv .venv
@@ -56,6 +66,8 @@ AI 自打模式（无人工输入，适合快速验证）：
 start_maque.bat gpt-4.1-mini --ai-only
 ```
 
+说明：`start_maque.bat` 只负责启动，不会重复安装依赖。若提示缺少环境，请先运行 `init_maque.bat`。
+
 ### 4.2 直接命令启动
 
 ```bash
@@ -74,6 +86,31 @@ python -m maque play --model gpt-4.1-mini --base-url https://your-proxy.example.
 python -m maque play --model gpt-4.1-mini --seed 42 --log-dir ./logs
 ```
 
+### 4.3 启动手机网页端
+
+```bash
+python -m maque web --host 0.0.0.0 --port 8000
+```
+
+浏览器打开：
+
+```text
+http://127.0.0.1:8000/
+```
+
+牌图目录规范（PNG）：
+
+```text
+assets/tiles/
+  1T.png ... 9T.png
+  1B.png ... 9B.png
+  EW.png SW.png WW.png NW.png
+  RD.png GD.png WB.png
+  back.png
+```
+
+若素材缺失，网页会自动回退为中文牌名显示并在状态栏提示缺图数量。
+
 ## 5. 回放日志
 
 ```bash
@@ -83,22 +120,16 @@ python -m maque replay --log ./logs/game_YYYYMMDD_HHMMSS.jsonl
 ## 6. CLI 显示说明
 
 主视图只显示：
-- 你的手牌（带序号）
+- 你的手牌（上方中文牌名）
 - 最近动作
 - 弃牌区
   - `E/S/W/N` 每行仅显示最近 2 张
   - 更早弃牌进入 `History` 一行（不区分玩家）
 
-## 7. 玩家输入示例
+## 7. 玩家操作
 
-- `d 3`：打出手牌第 3 张
-- `d 5W`：打出指定牌
-- `p`：碰
-- `gm`：明杠
-- `ga 9W`：暗杠 9W
-- `gj 2T`：加杠 2T
-- `h`：胡
-- `pass`：过
+- 不再手打命令，改为方向键 + Enter 选择动作与出牌
+- 牌型只使用索/筒/字牌（不含万）
 
 ## 8. 运行测试
 
@@ -120,6 +151,7 @@ maque/
   logging/
   render/
 tests/
+init_maque.bat
 start_maque.bat
 ```
 

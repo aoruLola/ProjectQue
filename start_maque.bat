@@ -3,39 +3,37 @@ setlocal
 
 cd /d "%~dp0"
 
-set "DEFAULT_MODEL=gpt-4.1-mini"
-if not "%MAQUE_MODEL%"=="" set "DEFAULT_MODEL=%MAQUE_MODEL%"
-
-set "MODEL=%DEFAULT_MODEL%"
-if not "%~1"=="" set "MODEL=%~1"
+set "MODEL_ARG="
+if not "%~1"=="" set "MODEL_ARG=--model %~1"
 set "INTERACTIVE_FLAG=--interactive"
 if /I "%~2"=="--ai-only" set "INTERACTIVE_FLAG="
 
 if not exist ".venv\Scripts\python.exe" (
-  echo [INFO] Creating virtual environment...
-  python -m venv .venv
-  if errorlevel 1 goto :fail
+  echo [ERROR] Python environment is not initialized.
+  echo [ERROR] Please run init_maque.bat first.
+  exit /b 1
 )
 
 call ".venv\Scripts\activate.bat"
 if errorlevel 1 goto :fail
 
-echo [INFO] Installing dependencies...
-python -m pip install --upgrade pip >nul
-pip install -r requirements.txt
-if errorlevel 1 goto :fail
+python -c "import openai,rich" >nul 2>nul
+if errorlevel 1 (
+  echo [ERROR] Dependencies are missing in .venv.
+  echo [ERROR] Please run init_maque.bat first.
+  exit /b 1
+)
 
-if "%OPENAI_API_KEY%"=="" (
-  echo [WARN] OPENAI_API_KEY is not set. LLM agents will fallback to rule-based decisions.
-)
-if not "%MAQUE_OPENAI_BASE_URL%"=="" (
-  echo [INFO] Using MAQUE_OPENAI_BASE_URL=%MAQUE_OPENAI_BASE_URL%
-)
+echo [INFO] Runtime config (.env / env vars) will be loaded by the app.
 
 if not exist "logs" mkdir logs
 
-echo [INFO] Starting game with model: %MODEL%
-python -m maque play --model %MODEL% --log-dir .\logs %INTERACTIVE_FLAG%
+if "%MODEL_ARG%"=="" (
+  echo [INFO] Starting game with model from .env / defaults
+) else (
+  echo [INFO] Starting game with explicit model: %~1
+)
+python -m maque play %MODEL_ARG% --log-dir .\logs %INTERACTIVE_FLAG%
 set "EXIT_CODE=%ERRORLEVEL%"
 
 echo.

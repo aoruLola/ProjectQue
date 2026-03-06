@@ -1,0 +1,164 @@
+:root {
+  --bg: #0f3b2e;
+  --panel: #145a43;
+  --panel-soft: #1a6b50;
+  --text: #f4f2e9;
+  --muted: #c8d6c2;
+  --accent: #f5cf74;
+  --danger: #ff8f8f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: radial-gradient(circle at 20% 0%, #1c6a4f 0%, var(--bg) 55%, #0a2f24 100%);
+  color: var(--text);
+}
+
+.app-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.status-card,
+.card {
+  border-radius: 12px;
+  padding: 10px;
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel-soft) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.status-card {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.title-row h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tile-grid,
+.tile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tile {
+  width: clamp(30px, 8vw, 42px);
+  aspect-ratio: 0.72;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: #efe6cf;
+  color: #16322a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.tile .fallback {
+  font-size: 11px;
+  text-align: center;
+  padding: 2px;
+  line-height: 1.2;
+}
+
+.tile.clickable {
+  outline: 2px solid transparent;
+}
+
+.tile.clickable:active,
+.tile.clickable.selected {
+  outline-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.section-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #ffe6b0;
+}
+
+.seat-line {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.kv-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #f0c66f;
+  color: #312400;
+  font-weight: 700;
+}
+
+button.secondary {
+  background: #d7e7da;
+}
+
+button.danger {
+  background: #ffb2b2;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.error {
+  color: var(--danger);
+}
+
+@media (max-width: 560px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}

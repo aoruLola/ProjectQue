@@ -3,10 +3,10 @@
 
 def test_normal_hu():
     hand = [
-        "1W", "2W", "3W",
-        "4W", "5W", "6W",
-        "7W", "8W", "9W",
-        "2T", "3T", "4T",
+        "1T", "2T", "3T",
+        "4T", "5T", "6T",
+        "7T", "8T", "9T",
+        "2B", "3B", "4B",
         "5B", "5B",
     ]
     result = evaluate_hu(hand)
@@ -16,9 +16,9 @@ def test_normal_hu():
 
 def test_pengpeng_hu():
     hand = [
-        "1W", "1W", "1W",
-        "2W", "2W", "2W",
-        "3T", "3T", "3T",
+        "1T", "1T", "1T",
+        "2T", "2T", "2T",
+        "3B", "3B", "3B",
         "RD", "RD", "RD",
         "9B", "9B",
     ]
@@ -29,8 +29,8 @@ def test_pengpeng_hu():
 
 def test_qixiaodui():
     hand = [
-        "1W", "1W", "2W", "2W", "3W", "3W", "4T", "4T",
-        "5T", "5T", "6B", "6B", "EW", "EW",
+        "1T", "1T", "2T", "2T", "3T", "3T", "4B", "4B",
+        "5B", "5B", "6B", "6B", "EW", "EW",
     ]
     result = evaluate_hu(hand)
     assert result.is_hu
@@ -39,9 +39,9 @@ def test_qixiaodui():
 
 def test_haohua_qixiaodui():
     hand = [
-        "1W", "1W", "1W", "1W",
-        "2W", "2W", "3W", "3W",
-        "4T", "4T", "5T", "5T", "6B", "6B",
+        "1T", "1T", "1T", "1T",
+        "2T", "2T", "3T", "3T",
+        "4B", "4B", "5B", "5B", "6B", "6B",
     ]
     result = evaluate_hu(hand)
     assert result.is_hu
@@ -50,10 +50,10 @@ def test_haohua_qixiaodui():
 
 def test_ghost_wildcard_hu():
     hand = [
-        "1W", "2W", "WB",
-        "4W", "5W", "6W",
-        "7W", "8W", "9W",
-        "2T", "3T", "4T",
+        "1T", "2T", "WB",
+        "4T", "5T", "6T",
+        "7T", "8T", "9T",
+        "2B", "3B", "4B",
         "5B", "5B",
     ]
     result = evaluate_hu(hand)

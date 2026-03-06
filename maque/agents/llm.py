@@ -5,11 +5,19 @@ import os
 import re
 
 from ..rules import ActionOption
+from ..tiles import GHOST_TILE
 from .base import AgentDecision
 from .fallback import RuleSafeAgent
 
 
 class OpenAILLMAgent:
+    HOUSE_RULES = [
+        "Zhaoqing Mahjong uses full self-draw only; no winning on other player's discard.",
+        "No chi is allowed. On discard claims, only PASS/PENG/GANG_MING are possible.",
+        "White board WB is ghost (wildcard). Prefer keeping WB; avoid discarding WB unless there is no alternative discard.",
+        "Base winning shape is 4 sets + 1 pair; also support qixiaodui and pengpenghu.",
+    ]
+
     def __init__(
         self,
         model: str,
@@ -29,6 +37,7 @@ class OpenAILLMAgent:
             raw = self._call_openai(seat, context, legal_options)
             parsed = self._parse_response(raw)
             decision = self._validate(parsed, legal_options)
+            decision = self._apply_house_policy(seat, context, legal_options, decision)
             decision.raw = raw
             return decision
         except Exception as exc:
@@ -58,6 +67,7 @@ class OpenAILLMAgent:
             "seat": seat,
             "visible_state": context,
             "legal_options": legal_payload,
+            "house_rules": self.HOUSE_RULES,
             "instruction": "Choose exactly one legal option and return JSON only: {\"action\":\"...\",\"tile\":\"...\",\"reason\":\"...\"}",
         }
 
@@ -67,7 +77,7 @@ class OpenAILLMAgent:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a Mahjong bot. Respond with strict JSON only.",
+                    "content": "You are a Mahjong bot for Zhaoqing Mahjong. Follow house_rules strictly. Respond with strict JSON only.",
                 },
                 {
                     "role": "user",
@@ -116,3 +126,26 @@ class OpenAILLMAgent:
             return AgentDecision(action=action, tile=None, reason=reason)
 
         raise RuntimeError(f"illegal action from llm: {action} {tile}")
+
+    def _apply_house_policy(
+        self,
+        seat: str,
+        context: dict,
+        legal_options: list[ActionOption],
+        decision: AgentDecision,
+    ) -> AgentDecision:
+        if decision.action != "DISCARD" or decision.tile != GHOST_TILE:
+            return decision
+
+        alternatives = [opt for opt in legal_options if opt.action == "DISCARD" and opt.tile != GHOST_TILE]
+        if not alternatives:
+            return decision
+
+        safe = self.fallback.decide(seat, context, alternatives)
+        if safe.action == "DISCARD" and safe.tile and safe.tile != GHOST_TILE:
+            return AgentDecision(
+                action="DISCARD",
+                tile=safe.tile,
+                reason=f"{decision.reason}; policy avoid discarding ghost",
+            )
+        return decision

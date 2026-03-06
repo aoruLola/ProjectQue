@@ -27,13 +27,13 @@ def test_llm_agent_fallback_on_missing_key(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
     agent = OpenAILLMAgent(model="gpt-4.1-mini", fallback=RuleSafeAgent())
-    legal = [ActionOption(DISCARD, "9W")]
-    context = {"self_hand": ["9W", "1W"]}
+    legal = [ActionOption(DISCARD, "9B")]
+    context = {"self_hand": ["9B", "1T"]}
 
     decision = agent.decide("E", context, legal)
 
     assert decision.action == DISCARD
-    assert decision.tile == "9W"
+    assert decision.tile == "9B"
     assert decision.raw is not None
     assert "LLM_ERROR" in decision.raw
 

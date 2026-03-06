@@ -10,3 +10,6 @@ __pycache__/
 
 # Runtime logs
 logs/*.jsonl
+
+# Local secrets
+.env

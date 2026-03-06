@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from ..state import ActionEvent, GameState
+from ..tiles import tile_text_cn
 
 
 class EventLogger:
@@ -45,7 +46,7 @@ class ReplayView:
                     continue
                 data = json.loads(raw)
                 ev = data["event"]
-                tile = f" {ev['tile']}" if ev.get("tile") else ""
+                tile = f" {tile_text_cn(ev['tile'])}" if ev.get("tile") else ""
                 frm = f" <- {ev['from_player']}" if ev.get("from_player") else ""
                 lines.append(f"T{ev['turn']} {ev['player']} {ev['action']}{tile}{frm}")
         return lines

@@ -25,15 +25,16 @@ class PlayerState:
 @dataclass
 class DiscardViewState:
     recent_by_player: dict[str, deque[str]] = field(
-        default_factory=lambda: {seat: deque() for seat in SEATS}
+        default_factory=lambda: {seat: deque(maxlen=2) for seat in SEATS}
     )
+    global_discards: list[str] = field(default_factory=list)
     history_compact: list[str] = field(default_factory=list)
 
     def add_discard(self, seat: str, tile: str) -> None:
-        recent = self.recent_by_player[seat]
-        if len(recent) >= 2:
-            self.history_compact.append(recent.popleft())
-        recent.append(tile)
+        self.recent_by_player[seat].append(tile)
+        self.global_discards.append(tile)
+        # Backward-compatible alias now representing global discard timeline.
+        self.history_compact = self.global_discards
 
 
 @dataclass
