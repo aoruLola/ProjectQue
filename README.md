@@ -162,3 +162,34 @@ start_maque.bat
 - 更强的 AI 策略对照（规则引擎 / LLM / 混合）
 - 更详细回放（Prompt / token / action latency）
 
+
+### 4.4 Docker 部署（推荐用于网页端）
+
+构建并启动：
+
+```bash
+docker compose up --build -d
+```
+
+查看状态与日志：
+
+```bash
+docker compose ps
+docker compose logs -f maque-web
+```
+
+停止并清理容器：
+
+```bash
+docker compose down
+```
+
+启动后访问：
+
+```text
+http://127.0.0.1:8000/
+```
+
+说明：
+- `docker-compose.yml` 已挂载 `./assets`（只读）和 `./logs`（可写）
+- 默认会从 `.env` 注入 `OPENAI_API_KEY` / `MAQUE_OPENAI_BASE_URL` / `MAQUE_MODEL`

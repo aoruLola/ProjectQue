@@ -1,0 +1,14 @@
+﻿services:
+  maque-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: maque-web
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./assets:/app/assets:ro
+      - ./logs:/app/logs
+    restart: unless-stopped
