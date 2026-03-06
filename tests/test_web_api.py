@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 
 from fastapi.testclient import TestClient
 
@@ -52,9 +52,11 @@ class _FakeSessionManager:
     def __init__(self):
         self.sessions = {}
         self.created = 0
+        self.last_config = None
 
-    def create_session(self, _config):
+    def create_session(self, config):
         self.created += 1
+        self.last_config = config
         session_id = f"s{self.created}"
         session = _FakeSession(session_id)
         self.sessions[session_id] = session
@@ -80,6 +82,7 @@ def test_create_session_and_health():
     payload = res.json()
     assert payload["session_id"] == "s1"
     assert payload["player_seat"] == "E"
+    assert manager.last_config is not None
 
     health = client.get("/api/health")
     assert health.status_code == 200
@@ -115,3 +118,15 @@ def test_ws_handles_join_and_commands():
     assert session.start_ma_called == 1
     assert session.next_round_called == 1
     assert session.quit_called == 1
+
+
+def test_create_session_prefers_maque_model_env(monkeypatch):
+    manager = _FakeSessionManager()
+    app = create_app(session_manager=manager)
+    client = TestClient(app)
+
+    monkeypatch.setenv("MAQUE_MODEL", "Pro/deepseek-ai/DeepSeek-V3.2")
+    res = client.post("/api/sessions", json={})
+    assert res.status_code == 200
+    assert manager.last_config is not None
+    assert manager.last_config.model == "Pro/deepseek-ai/DeepSeek-V3.2"

@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
 from typing import Any
 
@@ -15,7 +16,7 @@ from .tile_assets import check_tile_assets
 
 
 class SessionCreateRequest(BaseModel):
-    model: str = Field(default=DEFAULT_PLAY_MODEL)
+    model: str | None = Field(default=None)
     base_url: str | None = Field(default=None)
     seed: int | None = Field(default=None)
 
@@ -49,9 +50,10 @@ def create_app(session_manager: SessionManager | None = None) -> FastAPI:
 
     @app.post("/api/sessions")
     def create_session(req: SessionCreateRequest) -> dict[str, Any]:
+        resolved_model = (req.model or "").strip() or (os.getenv("MAQUE_MODEL") or "").strip() or DEFAULT_PLAY_MODEL
         session = manager.create_session(
             SessionConfig(
-                model=req.model,
+                model=resolved_model,
                 base_url=req.base_url,
                 seed=req.seed,
                 player_seat="E",
@@ -132,3 +134,4 @@ def run_server(host: str = "0.0.0.0", port: int = 8000) -> None:
     import uvicorn
 
     uvicorn.run("maque.web.server:create_app", factory=True, host=host, port=port, reload=False)
+
